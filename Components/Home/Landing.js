@@ -70,18 +70,18 @@ const Landing = () => {
             color: "#fff",
             wordSpacing: 3,
             fontFamily: "Bebas Neue",
+            
           }}
           className={classNames["homeH1"]}
         >
-          {"Hi !  i'm"}<br></br>
-          {"Madhan kumar"}
+          Hi !  i'm <span>Madhan kumar</span>
    
         </h1>
         <p
           style={{
             color: "grey",
             fontSize: 21,
-            width: "50%",
+            width: "80%",
             // height: "100%",
           }}
           className={classNames["homePara1"]}
@@ -114,7 +114,7 @@ const Landing = () => {
         <h1
           style={{
             textTransform: "uppercase",
-            fontSize: "clamp(2.2rem, -2.1875rem + 14vw, 5.25rem)",
+            fontSize: "clamp(2.5rem, -2.1875rem + 15vw, 6.25rem)",
             fontWeight: "bold",
             color: "#fff",
             wordSpacing: 3,
