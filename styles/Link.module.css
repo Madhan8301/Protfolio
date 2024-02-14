@@ -1,0 +1,17 @@
+.el {
+  color: white;
+  border-top: 1px solid white;
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+  perspective: 80vw;
+  transform-origin: top;
+}
+
+.el:last-of-type {
+  border-bottom: 1px solid white;
+}
+
+.menuItem:hover {
+  color: #e24b37;
+}

@@ -1,0 +1,36 @@
+.menu {
+  position: fixed;
+  display: flex;
+  z-index: 3;
+  height: 100%;
+  width: 100%;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.header {
+  display: flex;
+  justify-content: flex-end;
+  padding: 20px;
+}
+
+.header svg {
+  cursor: pointer;
+  width: 70px;
+  height: 70px;
+}
+
+.path {
+  transition: color 0.5s;
+}
+
+svg:hover .path {
+  stroke: #e24b37;
+}
+
+.body {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  width: 100%;
+}

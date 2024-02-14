@@ -1,0 +1,29 @@
+{
+  "name": "portfolio",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 5555",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^5.2.6",
+    "@rooks/use-window-size": "^4.11.2",
+    "framer-motion": "^10.16.4",
+    "gsap": "^3.12.2",
+    "matter-js": "^0.19.0",
+    "next": "^13.4.19",
+    "react": "^18",
+    "react-dom": "^18",
+    "react-matter-js": "^1.0.4",
+    "react-scroll": "^1.9.0",
+    "split-type": "^0.3.4",
+    "swiper": "^11.0.5"
+  },
+  "devDependencies": {
+    "eslint": "^8",
+    "eslint-config-next": "14.0.1"
+  }
+}
