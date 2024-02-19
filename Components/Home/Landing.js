@@ -58,14 +58,15 @@ const Landing = () => {
         style={{
           display: "flex",
           width: "100%",
-          gap: 20,
+          // gap: 20,
+          justifyContent: "flex-end",
         }}
         className={classNames["homeDiv"]}
       >
         <h1
           style={{
             textTransform: "uppercase",
-            fontSize: "clamp(2.5rem, -2.1875rem + 15vw, 6.25rem)",
+            fontSize: "clamp(1.5rem, -1.0875rem + 13vw, 5.05rem)",
             fontWeight: "bold",
             color: "#fff",
             wordSpacing: 3,
@@ -73,8 +74,8 @@ const Landing = () => {
             
           }}
           className={classNames["homeH1"]}
-        >
-          Hi !  i'm <span>Madhan kumar</span>
+        ><br></br>
+          Hi !  i'm Madhan kumar
    
         </h1>
         <p
@@ -102,7 +103,7 @@ const Landing = () => {
           style={{
             color: "grey",
             fontSize: 21,
-            width: "50%",
+            width: "80%",
             // height: "100%",
           }}
           className={classNames["homePara2"]}
@@ -114,15 +115,16 @@ const Landing = () => {
         <h1
           style={{
             textTransform: "uppercase",
-            fontSize: "clamp(2.5rem, -2.1875rem + 15vw, 6.25rem)",
+            fontSize: "clamp(2.1rem, -2.0875rem + 12.5vw, 5.15rem)",
             fontWeight: "bold",
             color: "#fff",
             wordSpacing: 3,
             fontFamily: "Bebas Neue",
+            // width:"500%",
           }}
           className={classNames["homeH2"]}
         >
-          Automation Test <br></br>Engineer
+             Automation Test Engineer
         </h1>
       </div>
       <div
