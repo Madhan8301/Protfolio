@@ -23,7 +23,7 @@ const orxa = [
   "Streamlined the testing process by proactively identifying and resolving complex issues, resulting in a 40% reduction in test cycle time and ensures on time product delivery.",
   "Demonstrated a high level of expertise in scripting languages that extend beyond Selenium, encompassing versatile languages such as Python and Java al so Tools like UiPath and Appium. This proficiency has significantly enriched my automation capabilities, allowing for seamless integration and robust automation solutions.",
   "Integrate scripts into CI/CD pipelines to facilitate seamless deployment and validation processes. Proficient in creating comprehensive test reports, documenting test cases, results, and identifying defects throughout the testing lifecycle in Selenium Java."
-  ];
+];
 
 function Content4() {
   const lineRef = useRef(null);

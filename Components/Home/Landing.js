@@ -51,6 +51,7 @@ const Landing = () => {
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
+        
       }}
       className={classNames["home"]}
     >
@@ -60,6 +61,7 @@ const Landing = () => {
           width: "100%",
           // gap: 20,
           justifyContent: "flex-end",
+          
         }}
         className={classNames["homeDiv"]}
       >
@@ -80,7 +82,7 @@ const Landing = () => {
         </h1>
         <p
           style={{
-            color: "grey",
+            color: "#ff9900",
             fontSize: 21,
             width: "80%",
             // height: "100%",
@@ -101,7 +103,7 @@ const Landing = () => {
       >
         <p
           style={{
-            color: "grey",
+            color: "#ff9900",
             fontSize: 21,
             width: "80%",
             // height: "100%",
