@@ -58,10 +58,12 @@ body {
   overflow-x: hidden;
   font-family: DM Sans;
   background-color: #15171b;
+  background-image: url('/assets/BGIF.gif');
 }
 
 body {
   color: rgb(var(--foreground-rgb));
+  /* background-image: url('/assets/BGIF.gif'); */
 }
 
 a {
