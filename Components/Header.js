@@ -13,8 +13,8 @@ function Header({}, ref) {
         <img
           src="../assets/logo.png"
           style={{
-            width: 80,
-            height: 80,
+            width: 55,
+            height: 55,
             objectFit: "contain",
             marginLeft: 20,
           }}
