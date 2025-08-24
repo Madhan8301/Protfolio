@@ -6,6 +6,7 @@ import Content5 from "./Content5";
 import Content6 from "./Content6";
 import Landing from "./Landing";
 
+
 function Home() {
   return (
     <div
@@ -14,6 +15,7 @@ function Home() {
         width: "100vw",
       }}
     >
+      
       <Landing />
       <section id="About">
         <Content1 />

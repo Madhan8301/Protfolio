@@ -58,7 +58,7 @@ body {
   overflow-x: hidden;
   font-family: DM Sans;
   background-color: #15171b;
-  background-image: url('/assets/BGIF.gif');
+  /* background-image: url('/assets/BGIF.gif'); */
 }
 
 body {

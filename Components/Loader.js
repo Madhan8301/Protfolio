@@ -42,32 +42,6 @@ const Loader = ({ onLoaded = () => {} }) => {
     },
   };
   return (
-    // <motion.div
-    //   variants={slideUp}
-    //   initial="initial"
-    //   exit="exit"
-    //   style={{
-    //     height: "100vh",
-    //     width: "100vw",
-    //     backgroundColor: "#000",
-    //     display: "flex",
-    //     flexDirection: "column",
-    //     justifyContent: "center",
-    //     alignItems: "center",
-    //   }}
-    // >
-    //   <img src="/assets/loader.gif" />
-    //   {!showLoader ? (
-    //     <div className={classNames["loader"]}></div>
-    //   ) : (
-    //     <Button
-    //       onButtonClick={() => {
-    //         onLoaded();
-    //       }}
-    //     />
-    //   )}
-    // </motion.div>
-
     <motion.div
       variants={slideUp}
       initial="initial"
@@ -92,8 +66,6 @@ const Loader = ({ onLoaded = () => {} }) => {
             }}
           >
             <img src="/assets/Walk.gif" />
-            {/* <img src="/assets/loader.gif" /> */}
-            {/* <img src="/assets/Skateboarding.gif" /> */}
             {!showLoader ? (
               <div className={classNames["loader"]}></div>
             ) : (
@@ -102,7 +74,9 @@ const Loader = ({ onLoaded = () => {} }) => {
                   onLoaded();
                 }}
               />
+              
             )}
+            
           </div>
           <svg
             style={{
