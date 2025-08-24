@@ -49,7 +49,7 @@
   justify-content: center;
   color: rgb(211, 211, 211);
   background-color: #15171b;
-  background-image: url('/assets/BGIF.gif');
+  /* background-image: url('/assets/BGIF.gif'); */
 }
 
 .content2Body {
