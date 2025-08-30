@@ -5,7 +5,7 @@ import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 import { useEffect, useRef } from "react";
 import classNames from "../../styles/Home.module.css";
 
-const maximlLabs = [
+const cognizant = [
   "Engaged in Full Stack Development projects, focusing on both front-end and back-end technologies.",
   "Developed dynamic and user-friendly interfaces using HTML, CSS, and JavaScript.",
   "Collaborated with team members to achieve project milestones and ensure code quality",
@@ -15,7 +15,7 @@ const maximlLabs = [
   "Excellent problem-solving and collaboration skills"
 ];
 
-const orxa = [
+const kgisl = [
   "Skills : Selenium, Java, Cucumber, TestNG, Uipath, Appium, Python, Git, Jenkins, Jira.",
   "Actively contributed to quality assurance and test automation initiatives, resulting in a improvement of overall testing efficiency.",
   "Implemented a Selenium testing framework with Java and Cucumber BDD, leading to a 50% reduction in regression testing time across Y number of projects, ensuring a consistent 95% test coverage.",
@@ -78,17 +78,17 @@ function Content4() {
         },
       })
       .to(".ball02", { scale: 2 }, 0.03)
-      .to("#maximl-text", {}, 0.03)
+      .to("#cognizant-text", {}, 0.03)
       .fromTo(
-        "#maximl-container",
+        "#cognizant-container",
         { opacity: 0, x: 30 },
         { opacity: 1, transition: 0.3, x: 0, ease: "elastic(2.5, 1)" },
         0.03
       )
       .to(".ball04", { scale: 2 }, 0.15)
-      .to("#orxa-text", {}, 0.15)
+      .to("#kgisl-text", {}, 0.15)
       .fromTo(
-        "#orxa-container",
+        "#kgisl-container",
         { opacity: 0, x: -30 },
         { opacity: 1, transition: 0.3, x: 0, ease: "elastic(2.5, 1)" },
         0.15
@@ -207,7 +207,7 @@ function Content4() {
                   y="0%"
                   xlinkHref="/assets/Cognizant.png"
                   width={"100%"}
-                  className={classNames["maximl-logo"]}
+                  className={classNames["cognizant-logo"]}
                 ></image>
               </pattern>
             </defs>
@@ -224,7 +224,7 @@ function Content4() {
               y="230"
               stroke={"#ff3333"}
               opacity={0}
-              id="maximl-text"
+              id="cognizant-text"
             >
               March 2022 - October 2022
             </motion.text>
@@ -261,7 +261,7 @@ function Content4() {
               y="980"
               stroke={"#00e600"}
               opacity={0}
-              id="orxa-text"
+              id="kgisl-text"
             >
               December 2022 - Present
             </motion.text>
@@ -272,8 +272,8 @@ function Content4() {
           style={{
             opacity: 0,
           }}
-          id="maximl-container"
-          className={classNames["maximl-container"]}
+          id="cognizant-container"
+          className={classNames["cognizant-container"]}
         >
           <div className={classNames["chat-bg-left"]}>
             <div className={classNames["chat-text"]}>
@@ -305,7 +305,7 @@ function Content4() {
                   overflowY: "auto",
                 }}
               >
-                {renderPoints(maximlLabs)}
+                {renderPoints(cognizant)}
               </div>
             </div>
           </div>
@@ -314,8 +314,8 @@ function Content4() {
           style={{
             opacity: 0,
           }}
-          id="orxa-container"
-          className={classNames["orxa-container"]}
+          id="kgisl-container"
+          className={classNames["kgisl-container"]}
         >
           <div className={classNames["chat-bg-right"]}>
             <div className={classNames["chat-text"]}>
@@ -347,11 +347,13 @@ function Content4() {
                   overflowY: "auto",
                 }}
               >
-                {renderPoints(orxa)}
+                {renderPoints(kgisl)}
               </div>
             </div>
           </div>
         </div>
+
+        
       </div>
     </>
   );
