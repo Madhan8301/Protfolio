@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import ui from "@/styles/site/ui.module.css";
 import { easeInOut } from "./primitives";
 
-const words = ["Hello", "வணக்கம்", "नमस्ते", "Bonjour", "Hola", "Ciao", "Olá", "こんにちは", "Hallo"];
+const words = ["Hello", "வணக்கம்", "ನಮಸ್ಕಾರ", "നമസ്കാരം", "नमस्ते", "Bonjour", "Hola", "Ciao", "Olá", "こんにちは", "Hallo", "வணக்கம்"];
 
 // First word holds 800ms, the rest flick by every 150ms, the last one holds 650ms.
 const FIRST = 800;
@@ -30,20 +30,16 @@ export default function Preloader({ onDone }) {
     return () => clearTimeout(t);
   }, [index, onDone]);
 
-  const { width: w, height: h } = size;
-  const curve = {
-    initial: { d: `M0 0 L${w} 0 L${w} ${h} Q${w / 2} ${h + 300} 0 ${h} L0 0` },
-    exit: {
-      d: `M0 0 L${w} 0 L${w} ${h} Q${w / 2} ${h} 0 ${h} L0 0`,
-      transition: { duration: 0.7, ease: easeInOut, delay: 0.3 },
-    },
-  };
+  const w = size.width;
+  // Exit = the camera flies forward through the word: it accelerates toward you and blurs past
+  // while the dark screen dissolves into the site (which pushes in from depth — see Hero).
+  const rush = [0.7, 0, 0.84, 0];
 
   return (
     <motion.div
       className={ui.preloader}
       initial={{ top: 0 }}
-      exit={{ top: "-100vh", transition: { duration: 0.8, ease: easeInOut, delay: 0.2 } }}
+      exit={{ opacity: 0, transition: { duration: 0.75, delay: 0.35, ease: easeInOut } }}
       aria-label="Loading"
       role="status"
     >
@@ -55,13 +51,18 @@ export default function Preloader({ onDone }) {
             aria-hidden="true"
             initial={{ opacity: 0, scale: 0.7 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, transition: { duration: 0.35 } }}
+            exit={{ scale: 3, opacity: 0, transition: { duration: 0.9, ease: rush } }}
             transition={{ duration: 1.8, ease: soft }}
           />
 
           <motion.div
             className={ui.preCenter}
-            exit={{ opacity: 0, y: -24, filter: "blur(10px)", transition: { duration: 0.45, ease: easeInOut } }}
+            exit={{
+              scale: 9,
+              opacity: [1, 1, 0],
+              filter: ["blur(0px)", "blur(2px)", "blur(12px)"],
+              transition: { duration: 1, ease: rush, times: [0, 0.55, 1] },
+            }}
           >
             <p className={ui.preWord}>
               <span className={ui.preDot} />
@@ -91,16 +92,13 @@ export default function Preloader({ onDone }) {
             className={ui.preMeta}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0, transition: { duration: 0.3 } }}
+            exit={{ opacity: 0, transition: { duration: 0.25 } }}
             transition={{ duration: 0.8, delay: 0.25 }}
           >
             <span>Madhan Kumar M</span>
             <span>Automation Test Engineer</span>
             <span suppressHydrationWarning>Portfolio ©{new Date().getFullYear()}</span>
           </motion.div>
-          <svg className={ui.preSvg} aria-hidden="true">
-            <motion.path variants={curve} initial="initial" exit="exit" />
-          </svg>
         </>
       )}
     </motion.div>

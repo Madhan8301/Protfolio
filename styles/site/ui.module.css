@@ -521,7 +521,6 @@ a:focus-visible .rollInner > span {
 /* Preloader extras: one soft glow, a blur-slide word swap and a thin progress line */
 .preGlow {
   position: absolute;
-  /* Above the full-screen wipe SVG (which paints the loader's fill colour). */
   z-index: 1;
   left: 50%;
   top: 50%;
@@ -575,16 +574,6 @@ a:focus-visible .rollInner > span {
   box-shadow: 0 0 8px #d2ff3c;
 }
 
-.preSvg {
-  position: absolute;
-  top: 0;
-  width: 100%;
-  height: calc(100% + 300px);
-  pointer-events: none;
-}
-.preSvg path {
-  fill: #0c0c0e;
-}
 
 @media (max-width: 900px) {
   .shBody {

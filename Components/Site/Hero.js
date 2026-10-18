@@ -168,6 +168,23 @@ function Terminal({ ready }) {
   );
 }
 
+/*
+  Camera dolly: before the site is ready the hero sits far away — small, tipped back and out of focus.
+  When the intro hands over, the camera moves forward and the interface settles into place.
+*/
+const camera = {
+  far: { scale: 0.78, rotateX: 14, y: 60, opacity: 0, filter: "blur(14px)" },
+  near: {
+    scale: 1,
+    rotateX: 0,
+    y: 0,
+    opacity: 1,
+    filter: "blur(0px)",
+    transition: { duration: 1.6, delay: 0.2, ease: [0.16, 1, 0.3, 1], opacity: { duration: 0.9, delay: 0.2 } },
+    transitionEnd: { filter: "none" },
+  },
+};
+
 export default function Hero({ ready }) {
   const tilt = useTilt(7);
   const spot = useSpotlight();
@@ -186,7 +203,16 @@ export default function Hero({ ready }) {
   const termScale = useTransform(out, [0, 1], [1, 0.86]);
 
   return (
-    <section id="top" ref={heroRef} className={s.hero} data-paused={!onScreen || undefined}>
+    <motion.section
+      id="top"
+      ref={heroRef}
+      className={s.hero}
+      data-paused={!onScreen || undefined}
+      variants={camera}
+      initial="far"
+      animate={ready ? "near" : "far"}
+      style={{ transformPerspective: 1400, transformOrigin: "50% 45%" }}
+    >
       <div className={s.grid} aria-hidden="true" />
       <div className={s.glow} aria-hidden="true" />
 
@@ -260,6 +286,6 @@ export default function Hero({ ready }) {
           <span />
         </motion.a>
       </div>
-    </section>
+    </motion.section>
   );
 }
