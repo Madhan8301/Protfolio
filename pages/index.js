@@ -3,6 +3,7 @@ import { AnimatePresence, MotionConfig } from "framer-motion";
 import { useCallback, useEffect, useState } from "react";
 import About from "@/Components/Site/About";
 import Achievements from "@/Components/Site/Achievements";
+import Backdrop from "@/Components/Site/Backdrop";
 import Capabilities from "@/Components/Site/Capabilities";
 import Contact from "@/Components/Site/Contact";
 import Experience from "@/Components/Site/Experience";
@@ -78,6 +79,7 @@ export default function Home() {
       <SmoothScroll />
       <AnimatePresence mode="wait">{intro && <Preloader key="preloader" onDone={finishIntro} />}</AnimatePresence>
       {intro === null && <div className={ui.curtain} aria-hidden="true" />}
+      <Backdrop />
       <MouseFx />
       <Nav ready={ready} />
       <TestRunner ready={ready} />

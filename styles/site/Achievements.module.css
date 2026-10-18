@@ -41,7 +41,10 @@
   padding: clamp(20px, 2.2vw, 28px);
   border-radius: var(--radius-lg);
   border: 1px solid var(--line);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.01)), #11141a;
+  background: var(--glass);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-edge);
   overflow: hidden;
 }
 .tileHead {

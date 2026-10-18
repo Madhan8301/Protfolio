@@ -13,16 +13,41 @@
   margin-inline: auto;
 }
 
-/* Background: faint grid + soft glow */
+/* Background: a perspective "test track" floor that flows toward you, plus a soft glow.
+   The floor tilts in 3D; its lines move via a transform on ::before (compositor-only). */
 .grid {
   position: absolute;
-  inset: 0;
-  background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
-  background-size: 64px 64px;
-  mask-image: radial-gradient(ellipse at 30% 40%, #000 20%, transparent 70%);
-  -webkit-mask-image: radial-gradient(ellipse at 30% 40%, #000 20%, transparent 70%);
-  opacity: 0.6;
+  left: -50%;
+  right: -50%;
+  top: 50%;
+  height: 520px;
+  overflow: hidden;
+  /* Horizon at the top edge; the near side swings toward the viewer. */
+  transform: perspective(900px) rotateX(60deg);
+  transform-origin: 50% 0;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.5) 30%, #000 70%);
+  mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.5) 30%, #000 70%);
+  opacity: 0.5;
   pointer-events: none;
+}
+.grid::before {
+  content: "";
+  position: absolute;
+  inset: -80px 0 0;
+  background-image: linear-gradient(rgba(var(--accent-rgb), 0.28) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(var(--accent-rgb), 0.2) 1px, transparent 1px);
+  background-size: 80px 80px;
+  animation: floor 5s linear infinite;
+  will-change: transform;
+}
+.hero[data-paused] .grid::before,
+.hero[data-paused] .terminalWrap::before {
+  animation-play-state: paused;
+}
+@keyframes floor {
+  to {
+    transform: translate3d(0, 80px, 0);
+  }
 }
 .glow {
   position: absolute;
@@ -111,14 +136,46 @@
 /* ---------- Terminal card ---------- */
 .terminalWrap {
   position: relative;
+  isolation: isolate;
+}
+/* A slowly rotating colour halo behind the card (conic field, softened by a radial mask). */
+.terminalWrap::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  top: 50%;
+  width: 175%;
+  aspect-ratio: 1;
+  margin: -87.5% 0 0 -87.5%;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    rgba(var(--accent-rgb), 0) 0deg,
+    rgba(var(--accent-rgb), 0.55) 70deg,
+    rgba(110, 195, 255, 0.45) 150deg,
+    rgba(167, 139, 250, 0.4) 220deg,
+    rgba(var(--accent-rgb), 0) 300deg
+  );
+  -webkit-mask-image: radial-gradient(closest-side, transparent 36%, #000 58%, rgba(0, 0, 0, 0.4) 72%, transparent 88%);
+  mask-image: radial-gradient(closest-side, transparent 36%, #000 58%, rgba(0, 0, 0, 0.4) 72%, transparent 88%);
+  opacity: 0.85;
+  animation: halo 16s linear infinite;
+  pointer-events: none;
+}
+@keyframes halo {
+  to {
+    transform: rotate(360deg);
+  }
 }
 .terminalTilt {
   border-radius: 16px;
 }
 .terminal {
   position: relative;
-  background: rgba(17, 20, 26, 0.88);
-  backdrop-filter: blur(12px);
+  background: linear-gradient(180deg, rgba(22, 27, 36, 0.82), rgba(12, 15, 21, 0.86));
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   border: 1px solid var(--line-2);
   border-radius: 16px;
   overflow: hidden;
@@ -241,8 +298,10 @@
   margin-top: 72px;
   border: 1px solid var(--line);
   border-radius: 18px;
-  background: rgba(17, 20, 26, 0.6);
-  backdrop-filter: blur(10px);
+  background: var(--glass);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-edge);
   overflow: hidden;
 }
 .stat {

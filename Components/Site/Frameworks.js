@@ -1,19 +1,23 @@
-import { AnimatePresence, motion, useInView, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useInView } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { frameworks } from "@/data/portfolio";
 import s from "@/styles/site/Frameworks.module.css";
-import { CountUp, SectionHeader, TiltCard, ease } from "./primitives";
+import { CountUp, SectionHeader, TiltCard, ease, useReducedMotionAfterMount } from "./primitives";
 import ReportShowcase from "./ReportShowcase";
 
 /* Architecture diagram: stages light up left to right while a pulse travels the connector. */
 function Flow({ steps }) {
   const ref = useRef(null);
   const inView = useInView(ref, { amount: 0.4 });
-  const reduce = useReducedMotion();
-  const [active, setActive] = useState(reduce ? steps.length - 1 : 0);
+  const reduce = useReducedMotionAfterMount();
+  const [active, setActive] = useState(0);
 
   useEffect(() => {
-    if (reduce || !inView) return undefined;
+    if (reduce) {
+      setActive(steps.length - 1);
+      return undefined;
+    }
+    if (!inView) return undefined;
     const t = setInterval(() => setActive((a) => (a + 1) % (steps.length + 1)), 900);
     return () => clearInterval(t);
   }, [inView, reduce, steps.length]);

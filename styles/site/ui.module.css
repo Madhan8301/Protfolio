@@ -48,14 +48,51 @@
   transform-origin: 0% 100%;
   will-change: transform;
 }
-/* Emphasised words: accent colour, same typeface. */
+/* Emphasised words: accent colour with a slow light sweep, same typeface.
+   The padding/negative margin extends the painted box so descenders (g, y) keep their fill. */
 .em {
   color: var(--accent);
+  background: linear-gradient(100deg, var(--accent) 0%, var(--accent) 32%, #d4ffe9 46%, var(--blue) 58%, var(--accent) 76%, var(--accent) 100%);
+  background-size: 260% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  padding: 0 0.06em 0.16em;
+  margin: 0 -0.06em -0.16em;
+  animation: emSweep 7s var(--ease-io) infinite;
+}
+@keyframes emSweep {
+  0%,
+  100% {
+    background-position: 100% 0;
+  }
+  50% {
+    background-position: 0% 0;
+  }
 }
 
 /* ---------- Section header ---------- */
 .sh {
+  position: relative;
+  isolation: isolate;
   margin-bottom: clamp(44px, 6vw, 64px);
+}
+.ghost {
+  position: absolute;
+  z-index: -1;
+  right: -0.04em;
+  top: -0.18em;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(7rem, 17vw, 15rem);
+  line-height: 1;
+  letter-spacing: -0.05em;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.09);
+  -webkit-mask-image: linear-gradient(180deg, #000 20%, transparent 90%);
+  mask-image: linear-gradient(180deg, #000 20%, transparent 90%);
+  pointer-events: none;
+  user-select: none;
 }
 .shTop {
   display: flex;

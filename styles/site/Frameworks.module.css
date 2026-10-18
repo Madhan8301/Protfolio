@@ -89,7 +89,10 @@
 .panel {
   border: 1px solid var(--line-2);
   border-radius: var(--radius-lg);
-  background: radial-gradient(80% 60% at 100% 0%, rgba(var(--accent-rgb), 0.1), transparent 60%), linear-gradient(180deg, #141820, #0f1218);
+  background: radial-gradient(80% 60% at 100% 0%, rgba(var(--accent-rgb), 0.1), transparent 60%), var(--glass-strong);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-edge);
   padding: clamp(22px, 3vw, 40px);
   overflow: hidden;
 }

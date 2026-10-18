@@ -1,5 +1,5 @@
-import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { motion, useInView } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 import { experience, profile, stats } from "@/data/portfolio";
 import s from "@/styles/site/Hero.module.css";
 import ui from "@/styles/site/ui.module.css";
@@ -86,9 +86,12 @@ export default function Hero({ ready }) {
   const spot = useSpotlight();
   const state = ready ? "show" : "hidden";
   const anim = (delay) => ({ variants: fade, initial: "hidden", animate: state, custom: delay });
+  // Background loops (floor, halo) pause once the hero is off screen.
+  const heroRef = useRef(null);
+  const onScreen = useInView(heroRef);
 
   return (
-    <section id="top" className={s.hero}>
+    <section id="top" ref={heroRef} className={s.hero} data-paused={!onScreen || undefined}>
       <div className={s.grid} aria-hidden="true" />
       <div className={s.glow} aria-hidden="true" />
 

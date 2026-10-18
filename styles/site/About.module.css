@@ -18,7 +18,10 @@
   border: 1px solid var(--line);
   border-radius: var(--radius);
   padding: 24px;
-  background: var(--panel-solid);
+  background: var(--glass);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-edge);
 }
 .nowLabel {
   display: flex;

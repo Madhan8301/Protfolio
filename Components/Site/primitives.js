@@ -176,10 +176,19 @@ export function CountUp({ value, start = true }) {
   );
 }
 
+/* Reduced-motion preference for render-time branching: false until mounted, so the first client
+   render matches the server HTML (the server can't know the preference). */
+export function useReducedMotionAfterMount() {
+  const reduce = useReducedMotion();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  return mounted && Boolean(reduce);
+}
+
 /* Cycles through phrases with a blur/slide swap. */
 export function RotatingWords({ words, interval = 3000 }) {
   const [i, setI] = useState(0);
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionAfterMount();
   useEffect(() => {
     if (reduce || words.length < 2) return undefined;
     const t = setInterval(() => setI((v) => (v + 1) % words.length), interval);
@@ -339,9 +348,15 @@ export function SectionHeader({ index, label, title, intro }) {
     return () => clearTimeout(t);
   }, [inView]);
   const file = `${label.toLowerCase().replace(/\s+/g, "-")}.spec.ts`;
+  // Oversized outlined section number drifting behind the header (background only).
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const ghostY = useTransform(scrollYProgress, [0, 1], [70, -70]);
 
   return (
     <header ref={ref} className={ui.sh}>
+      <motion.span className={ui.ghost} style={{ y: ghostY }} aria-hidden="true">
+        {index}
+      </motion.span>
       <motion.div
         className={ui.shTop}
         initial={{ opacity: 0, y: 12 }}

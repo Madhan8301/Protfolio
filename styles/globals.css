@@ -26,6 +26,29 @@
 
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-io: cubic-bezier(0.76, 0, 0.24, 1);
+
+  /* Glass surfaces: translucent so the aurora behind them shows through. */
+  --glass: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.012)), rgba(13, 16, 22, 0.62);
+  --glass-strong: linear-gradient(180deg, rgba(22, 27, 36, 0.78), rgba(12, 15, 21, 0.7));
+  --glass-blur: blur(18px) saturate(1.35);
+  --glass-edge: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+/* Registered so the background palette can transition between sections (see Backdrop). */
+@property --aura-1 {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgb(61, 220, 151);
+}
+@property --aura-2 {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgb(110, 195, 255);
+}
+@property --aura-3 {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgb(92, 110, 255);
 }
 
 * {
@@ -109,7 +132,8 @@ html.lenis body {
   background: var(--bg);
 }
 ::-webkit-scrollbar-thumb {
-  background: #262b33;
+  background: linear-gradient(180deg, rgba(var(--accent-rgb), 0.55), rgba(110, 195, 255, 0.45));
+  border: 2px solid var(--bg);
   border-radius: 8px;
 }
 
