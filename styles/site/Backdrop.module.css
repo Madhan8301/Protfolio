@@ -1,16 +1,11 @@
 /* Fixed atmosphere layer behind <main> (which sits at z-index 1). */
 .root {
-  --aura-1: rgb(61, 220, 151);
-  --aura-2: rgb(110, 195, 255);
-  --aura-3: rgb(92, 110, 255);
   position: fixed;
   inset: 0;
   z-index: 0;
   overflow: hidden;
   pointer-events: none;
   background: radial-gradient(120% 80% at 50% -10%, #0d1218 0%, var(--bg) 55%);
-  /* --aura-* are registered colours (globals.css), so a palette swap glides instead of snapping. */
-  transition: --aura-1 1.8s var(--ease), --aura-2 1.8s var(--ease), --aura-3 1.8s var(--ease);
 }
 
 /* ---------- Aurora ---------- */
@@ -62,6 +57,43 @@
   to {
     transform: translate3d(-16vw, -18vh, 0) scale(1.2);
   }
+}
+
+/* ---------- Liquid light (WebGL) ---------- */
+.liquid {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 1.6s var(--ease);
+}
+.root[data-gl] .liquid {
+  opacity: 1;
+}
+/* The shader replaces the CSS colour fields and the vignette once it's running. */
+.root[data-gl] .aurora,
+.root[data-gl] .vignette {
+  display: none;
+}
+
+/* ---------- Scroll progress ---------- */
+.progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 60;
+  height: 2px;
+  pointer-events: none;
+}
+.progress span {
+  display: block;
+  height: 100%;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  background: linear-gradient(90deg, var(--aura-1), var(--aura-2), var(--aura-3));
+  box-shadow: 0 0 12px var(--aura-1);
 }
 
 /* ---------- Coverage matrix ---------- */

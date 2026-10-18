@@ -1,5 +1,5 @@
-import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
+import { AnimatePresence, motion, useInView } from "framer-motion";
+import { useRef, useState } from "react";
 import { profile } from "@/data/portfolio";
 import s from "@/styles/site/Contact.module.css";
 import ui from "@/styles/site/ui.module.css";
@@ -8,6 +8,10 @@ import { ArrowIcon, Magnetic, RevealText, RollText, ease, useLocalTime } from ".
 export default function Contact() {
   const time = useLocalTime(profile.timezone);
   const [copied, setCopied] = useState(false);
+  // Observe the wordmark row itself: each letter starts clipped by its mask, so it never "intersects".
+  const wmRef = useRef(null);
+  const wmIn = useInView(wmRef, { once: true, amount: 0.25 });
+  const wordmark = `${profile.firstName} ${profile.lastName}`;
 
   const copy = async () => {
     try {
@@ -125,6 +129,23 @@ export default function Contact() {
           <ArrowIcon className={s.up} />
         </a>
       </footer>
+
+      {/* Giant sign-off wordmark: letters rise in, each lifts on hover. */}
+      <div ref={wmRef} className={s.wordmark} aria-hidden="true">
+        {Array.from(wordmark).map((c, i) => (
+          <span key={i} className={s.wmMask}>
+            <motion.span
+              className={s.wmChar}
+              data-space={c === " " || undefined}
+              initial={{ y: "102%" }}
+              animate={{ y: wmIn ? "0%" : "102%" }}
+              transition={{ duration: 1.3, delay: i * 0.045, ease }}
+            >
+              {c === " " ? "\u00a0" : c}
+            </motion.span>
+          </span>
+        ))}
+      </div>
     </section>
   );
 }

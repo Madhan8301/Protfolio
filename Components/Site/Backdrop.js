@@ -1,9 +1,10 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import s from "@/styles/site/Backdrop.module.css";
+import LiquidLight from "./LiquidLight";
 
 /*
   The page atmosphere, behind everything (fixed, pointer-events: none):
-  - an aurora of three drifting colour fields whose palette follows the section in view,
+  - "liquid light" (WebGL) whose palette follows the section in view — CSS colour fields as fallback,
   - a "coverage matrix" of dots that lights up around the pointer, with a test-scan beam
     sweeping down every few seconds,
   - film grain and a vignette.
@@ -170,18 +171,25 @@ function Matrix({ tintRef }) {
   return <canvas ref={ref} className={s.matrix} />;
 }
 
+const toVec = (pal) => pal.map((c) => c.split(",").map((n) => Number(n) / 255));
+
 export default function Backdrop() {
   const rootRef = useRef(null);
+  const barRef = useRef(null);
   const tintRef = useRef(PALETTES.top[0]);
+  const paletteRef = useRef(toVec(PALETTES.top));
+  const [gl, setGl] = useState(false);
+  const onReady = useCallback((ok) => setGl(ok), []);
 
   // Palette follows the section crossing the middle of the viewport.
   useEffect(() => {
-    const root = rootRef.current;
     const apply = (id) => {
       const pal = PALETTES[id];
       if (!pal) return;
-      pal.forEach((c, i) => root.style.setProperty(`--aura-${i + 1}`, `rgb(${c})`));
+      pal.forEach((c, i) => document.documentElement.style.setProperty(`--aura-${i + 1}`, `rgb(${c})`));
       tintRef.current = pal[0];
+      paletteRef.current = toVec(pal);
+      window.dispatchEvent(new Event("mk:palette"));
     };
     apply("top");
     const els = IDS.map((id) => document.getElementById(id)).filter(Boolean);
@@ -201,7 +209,9 @@ export default function Backdrop() {
       cancelAnimationFrame(raf);
       raf = requestAnimationFrame(() => {
         const max = document.documentElement.scrollHeight - window.innerHeight || 1;
-        root.style.setProperty("--sp", (window.scrollY / max).toFixed(4));
+        const sp = Math.min(1, window.scrollY / max);
+        root.style.setProperty("--sp", sp.toFixed(4));
+        if (barRef.current) barRef.current.style.transform = `scaleX(${sp.toFixed(4)})`;
       });
     };
     onScroll();
@@ -213,15 +223,21 @@ export default function Backdrop() {
   }, []);
 
   return (
-    <div ref={rootRef} className={s.root} aria-hidden="true">
-      <div className={s.aurora}>
-        <span className={`${s.blob} ${s.b1}`} />
-        <span className={`${s.blob} ${s.b2}`} />
-        <span className={`${s.blob} ${s.b3}`} />
+    <>
+      <div ref={rootRef} className={s.root} data-gl={gl || undefined} aria-hidden="true">
+        <div className={s.aurora}>
+          <span className={`${s.blob} ${s.b1}`} />
+          <span className={`${s.blob} ${s.b2}`} />
+          <span className={`${s.blob} ${s.b3}`} />
+        </div>
+        <LiquidLight palette={paletteRef} className={s.liquid} onReady={onReady} />
+        <Matrix tintRef={tintRef} />
+        <div className={s.grain} />
+        <div className={s.vignette} />
       </div>
-      <Matrix tintRef={tintRef} />
-      <div className={s.grain} />
-      <div className={s.vignette} />
-    </div>
+      <div className={s.progress} aria-hidden="true">
+        <span ref={barRef} />
+      </div>
+    </>
   );
 }

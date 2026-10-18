@@ -45,8 +45,14 @@
 .word,
 .em {
   display: inline-block;
-  transform-origin: 0% 100%;
-  will-change: transform;
+}
+.mask {
+  perspective: 700px;
+}
+.char {
+  display: inline-block;
+  transform-origin: 50% 100%;
+  backface-visibility: hidden;
 }
 /* Emphasised words: accent colour with a slow light sweep, same typeface.
    The padding/negative margin extends the painted box so descenders (g, y) keep their fill. */
@@ -60,6 +66,33 @@
   padding: 0 0.06em 0.16em;
   margin: 0 -0.06em -0.16em;
   animation: emSweep 7s var(--ease-io) infinite;
+}
+/* Split emphasised words (RevealText): each letter is its own layer while it animates, which a parent
+   background-clip can't reach — so every letter paints its own slice of one word-wide gradient.
+   Gradient is 2 words wide; --sweep (registered, globals.css) slides it by one word width. */
+.emWord {
+  display: inline-block;
+  animation: emSweepVar 7s var(--ease-io) infinite;
+}
+.emChar {
+  color: var(--accent);
+  background: linear-gradient(100deg, var(--accent) 0%, var(--accent) 28%, #d4ffe9 44%, var(--blue) 56%, var(--accent) 72%, var(--accent) 100%);
+  background-size: calc(var(--n) * 200%) 100%;
+  background-position: calc((var(--i) + var(--sweep) * var(--n)) / (2 * var(--n) - 1) * 100%) 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  padding-bottom: 0.16em;
+  margin-bottom: -0.16em;
+}
+@keyframes emSweepVar {
+  0%,
+  100% {
+    --sweep: 0;
+  }
+  50% {
+    --sweep: 1;
+  }
 }
 @keyframes emSweep {
   0%,
@@ -485,6 +518,63 @@ a:focus-visible .rollInner > span {
   text-transform: uppercase;
   color: #6e6d69;
 }
+/* Preloader extras: one soft glow, a blur-slide word swap and a thin progress line */
+.preGlow {
+  position: absolute;
+  /* Above the full-screen wipe SVG (which paints the loader's fill colour). */
+  z-index: 1;
+  left: 50%;
+  top: 50%;
+  width: 70vmin;
+  height: 70vmin;
+  margin: -35vmin 0 0 -35vmin;
+  pointer-events: none;
+}
+.preGlow::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(210, 255, 60, 0.12), rgba(61, 220, 151, 0.05) 50%, transparent 78%);
+  animation: preBreathe 2.6s ease-in-out infinite alternate;
+}
+@keyframes preBreathe {
+  to {
+    transform: scale(1.1);
+  }
+}
+.preCenter {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 26px;
+}
+.preMask {
+  display: inline-block;
+  overflow: hidden;
+  padding: 0.1em 0.04em 0.16em;
+  margin: -0.1em -0.04em -0.16em;
+}
+.preText {
+  display: inline-block;
+}
+.preLine {
+  width: 140px;
+  height: 2px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+.preLine span {
+  display: block;
+  height: 100%;
+  transform-origin: 0 50%;
+  background: #d2ff3c;
+  box-shadow: 0 0 8px #d2ff3c;
+}
+
 .preSvg {
   position: absolute;
   top: 0;

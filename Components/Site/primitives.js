@@ -30,7 +30,13 @@ function toWords(parts) {
 
 const plain = (parts) => (Array.isArray(parts) ? parts : [parts]).map((p) => (typeof p === "string" ? p : p.text)).join(" ");
 
-/* Words rise from behind a mask. Uncontrolled (`play` undefined) it runs when scrolled into view. */
+const charVariants = {
+  hidden: { y: "108%", rotateX: -85, opacity: 0 },
+  show: { y: "0%", rotateX: 0, opacity: 1, transition: { duration: 1.05, ease } },
+};
+
+/* Characters flip up from behind a per-word mask, one after another.
+   Uncontrolled (`play` undefined) it runs when scrolled into view. `stagger` is the per-word pace. */
 export function RevealText({ as = "h2", parts, className, delay = 0, play, stagger = 0.055, emClass, ...rest }) {
   const Tag = motion[as];
   const trigger =
@@ -42,21 +48,24 @@ export function RevealText({ as = "h2", parts, className, delay = 0, play, stagg
       className={className}
       aria-label={plain(parts)}
       initial="hidden"
-      variants={{ hidden: {}, show: { transition: { staggerChildren: stagger, delayChildren: delay } } }}
+      variants={{ hidden: {}, show: { transition: { staggerChildren: stagger * 0.32, delayChildren: delay } } }}
       {...trigger}
       {...rest}
     >
       {toWords(parts).map(({ w, em, key }) => (
         <span key={key} className={ui.mask} aria-hidden="true">
-          <motion.span
-            className={em ? `${ui.em} ${emClass || ""}` : ui.word}
-            variants={{
-              hidden: { y: "110%", rotate: 5 },
-              show: { y: "0%", rotate: 0, transition: { duration: 1, ease } },
-            }}
-          >
-            {w}
-          </motion.span>
+          <span className={em ? `${ui.emWord} ${emClass || ""}` : ui.word}>
+            {Array.from(w).map((c, ci, all) => (
+              <motion.span
+                key={ci}
+                className={em ? `${ui.char} ${ui.emChar}` : ui.char}
+                style={em ? { "--i": ci, "--n": all.length } : undefined}
+                variants={charVariants}
+              >
+                {c}
+              </motion.span>
+            ))}
+          </span>
         </span>
       ))}
     </Tag>
@@ -315,6 +324,12 @@ export function useTilt(max = 6) {
 }
 
 /* A card with the tilt + spotlight + glow-border hover effect and a reveal on scroll. */
+/* Cards arrive from depth: lower, slightly smaller and out of focus, then settle. */
+export const cardIn = {
+  hidden: { opacity: 0, y: 70, scale: 0.94, filter: "blur(12px)" },
+  show: { opacity: 1, y: 0, scale: 1, filter: "blur(0px)", transitionEnd: { filter: "none" } },
+};
+
 export function TiltCard({ as = "div", className = "", children, max = 6, delay = 0, style, ...rest }) {
   const Tag = motion[as];
   const tilt = useTilt(max);
@@ -323,10 +338,10 @@ export function TiltCard({ as = "div", className = "", children, max = 6, delay 
       className={`${ui.fx} ${className}`}
       style={{ ...tilt.style, ...style }}
       {...tilt.handlers}
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={cardIn.hidden}
+      whileInView={cardIn.show}
       viewport={{ once: true, amount: 0.2 }}
-      transition={{ duration: 0.9, delay, ease }}
+      transition={{ duration: 1.1, delay, ease }}
       {...rest}
     >
       {children}

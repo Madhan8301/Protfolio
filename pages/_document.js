@@ -2,7 +2,7 @@ import { Html, Head, Main, NextScript } from "next/document";
 
 // Inter Tight is only used by the "Hello" loading screen.
 const FONTS =
-  "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Inter+Tight:wght@500&display=swap";
+  "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Inter+Tight:wght@500&display=swap";
 
 export default function Document() {
   return (

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { experience } from "@/data/portfolio";
 import s from "@/styles/site/Experience.module.css";
 import ui from "@/styles/site/ui.module.css";
-import { ArrowIcon, CountUp, SectionHeader, ease, useTilt } from "./primitives";
+import { ArrowIcon, CountUp, SectionHeader, cardIn, ease, useTilt } from "./primitives";
 import { scrollToHash } from "./SmoothScroll";
 
 const VISIBLE = 4;
@@ -149,10 +149,10 @@ function JobCard({ job, index, total, durationText }) {
       className={`${ui.fx} ${s.card} ${job.current ? s.current : ""}`}
       style={{ ...tilt.style, "--tint": job.tint }}
       {...tilt.handlers}
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={cardIn.hidden}
+      whileInView={cardIn.show}
       viewport={{ once: true, amount: 0.15 }}
-      transition={{ duration: 0.9, ease }}
+      transition={{ duration: 1.1, ease }}
     >
       <header className={s.head}>
         <span className={s.logo}>

@@ -28,10 +28,18 @@
   --ease-io: cubic-bezier(0.76, 0, 0.24, 1);
 
   /* Glass surfaces: translucent so the aurora behind them shows through. */
-  --glass: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.012)), rgba(13, 16, 22, 0.62);
-  --glass-strong: linear-gradient(180deg, rgba(22, 27, 36, 0.78), rgba(12, 15, 21, 0.7));
-  --glass-blur: blur(18px) saturate(1.35);
-  --glass-edge: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  --glass: linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.012)), rgba(11, 14, 20, 0.76);
+  --glass-strong: linear-gradient(180deg, rgba(22, 27, 36, 0.88), rgba(11, 14, 20, 0.84));
+  /* No backdrop blur on cards: the background animates, so a blur would be recomputed every frame. */
+  --glass-blur: none;
+  --glass-edge: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 30px 60px -40px rgba(0, 0, 0, 0.8);
+}
+
+/* Animated by .emWord: slides the per-letter gradient of emphasised words (ui.module.css). */
+@property --sweep {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
 }
 
 /* Registered so the background palette can transition between sections (see Backdrop). */
@@ -58,6 +66,8 @@
 }
 
 html {
+  /* --aura-* (set by Backdrop per section) are registered colours, so a palette swap glides. */
+  transition: --aura-1 1.8s var(--ease), --aura-2 1.8s var(--ease), --aura-3 1.8s var(--ease);
   scroll-behavior: smooth;
   scroll-padding-top: 24px;
   -webkit-text-size-adjust: 100%;

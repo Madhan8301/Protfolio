@@ -1,9 +1,9 @@
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, useScroll, useTransform } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { experience, profile, stats } from "@/data/portfolio";
 import s from "@/styles/site/Hero.module.css";
 import ui from "@/styles/site/ui.module.css";
-import { ArrowIcon, CountUp, Magnetic, RevealText, RotatingWords, ease, useSpotlight, useTilt, useTypewriter } from "./primitives";
+import { ArrowIcon, CountUp, Magnetic, RotatingWords, ease, useSpotlight, useTilt, useTypewriter } from "./primitives";
 
 const current = experience.find((job) => job.current);
 
@@ -21,6 +21,93 @@ const fade = {
   hidden: { opacity: 0, y: 28 },
   show: (delay = 0) => ({ opacity: 1, y: 0, transition: { duration: 0.9, delay, ease } }),
 };
+
+/*
+  The name: letters flip up one by one, then react to the pointer — letters near it lift and thin out
+  (Space Grotesk is a variable font, 300–700). `x1`/`x2` are scroll-linked offsets for the two lines.
+*/
+const nameChar = {
+  hidden: { y: "105%", rotateX: -90, opacity: 0 },
+  show: (i) => ({ y: "0%", rotateX: 0, opacity: 1, transition: { duration: 1.2, delay: 0.15 + i * 0.045, ease } }),
+};
+
+function HeroName({ ready, x1, x2 }) {
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!window.matchMedia("(pointer: fine)").matches || window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+      return undefined;
+    const chars = Array.from(el.querySelectorAll("[data-c]"));
+    const val = chars.map(() => 0);
+    const R = 230;
+    let mx = -1e4;
+    let my = -1e4;
+    let raf = 0;
+    const tick = () => {
+      let busy = false;
+      chars.forEach((c, i) => {
+        const r = c.getBoundingClientRect();
+        const d = Math.hypot(r.left + r.width / 2 - mx, r.top + r.height / 2 - my);
+        const target = d < R ? (1 - d / R) ** 2 : 0;
+        val[i] += (target - val[i]) * 0.14;
+        if (Math.abs(target - val[i]) > 0.002) busy = true;
+        c.style.setProperty("--p", val[i].toFixed(3));
+      });
+      raf = busy ? requestAnimationFrame(tick) : 0;
+    };
+    const kick = () => {
+      if (!raf) raf = requestAnimationFrame(tick);
+    };
+    const onMove = (e) => {
+      mx = e.clientX;
+      my = e.clientY;
+      kick();
+    };
+    const onLeave = () => {
+      mx = -1e4;
+      my = -1e4;
+      kick();
+    };
+    const hero = el.closest("section");
+    hero.addEventListener("pointermove", onMove);
+    hero.addEventListener("pointerleave", onLeave);
+    return () => {
+      cancelAnimationFrame(raf);
+      hero.removeEventListener("pointermove", onMove);
+      hero.removeEventListener("pointerleave", onLeave);
+    };
+  }, []);
+
+  let n = 0;
+  const line = (text, accent, x) => (
+    <motion.span className={`${s.nameLine} ${accent ? s.nameAccent : ""}`} style={{ x }}>
+      {Array.from(text).map((c, i) => (
+        <span key={i} className={s.nameMask}>
+          <motion.span
+            data-c=""
+            className={s.nameChar}
+            custom={n++}
+            variants={nameChar}
+            initial="hidden"
+            animate={ready ? "show" : "hidden"}
+          >
+            {c}
+          </motion.span>
+        </span>
+      ))}
+    </motion.span>
+  );
+
+  return (
+    <h1 ref={ref} className={s.name} aria-label={profile.name}>
+      <span aria-hidden="true">
+        {line(profile.firstName, false, x1)}
+        {line(profile.lastName, true, x2)}
+      </span>
+    </h1>
+  );
+}
 
 function Terminal({ ready }) {
   const [start, setStart] = useState(false);
@@ -89,6 +176,14 @@ export default function Hero({ ready }) {
   // Background loops (floor, halo) pause once the hero is off screen.
   const heroRef = useRef(null);
   const onScreen = useInView(heroRef);
+  // Scroll-out: the name splits apart, the terminal tips back, the whole hero recedes.
+  const { scrollYProgress: out } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
+  const x1 = useTransform(out, [0, 1], ["0%", "-38%"]);
+  const x2 = useTransform(out, [0, 1], ["0%", "48%"]);
+  const fadeOut = useTransform(out, [0, 0.55], [1, 0]);
+  const termY = useTransform(out, [0, 1], [0, -160]);
+  const termRot = useTransform(out, [0, 1], [0, 22]);
+  const termScale = useTransform(out, [0, 1], [1, 0.86]);
 
   return (
     <section id="top" ref={heroRef} className={s.hero} data-paused={!onScreen || undefined}>
@@ -104,16 +199,9 @@ export default function Hero({ ready }) {
               <img src={current.logo} alt={current.company} />
             </motion.div>
 
-            <RevealText
-              as="h1"
-              parts={[profile.firstName, { text: profile.lastName, em: true }]}
-              className={s.name}
-              play={ready}
-              delay={0.1}
-              stagger={0.12}
-              aria-label={profile.name}
-            />
+            <HeroName ready={ready} x1={x1} x2={x2} />
 
+            <motion.div style={{ opacity: fadeOut }}>
             <motion.p {...anim(0.45)} className={s.role}>
               I make releases <RotatingWords words={rotating} />
             </motion.p>
@@ -138,8 +226,13 @@ export default function Hero({ ready }) {
                 </a>
               </Magnetic>
             </motion.div>
+            </motion.div>
           </div>
 
+          <motion.div
+            className={s.terminalDepth}
+            style={{ y: termY, rotateX: termRot, scale: termScale, opacity: fadeOut, transformPerspective: 1200 }}
+          >
           <motion.div {...anim(0.5)} className={s.terminalWrap} aria-hidden="true">
             <motion.div className={`${ui.fx} ${s.terminalTilt}`} style={tilt.style} {...tilt.handlers}>
               <Terminal ready={ready} />
@@ -147,6 +240,7 @@ export default function Hero({ ready }) {
             <span className={`${s.floatChip} ${s.chipA}`}>🎭 Playwright</span>
             <span className={`${s.floatChip} ${s.chipB}`}>⚡ 40% faster cycles</span>
             <span className={`${s.floatChip} ${s.chipC}`}>✓ 95% coverage</span>
+          </motion.div>
           </motion.div>
         </div>
 

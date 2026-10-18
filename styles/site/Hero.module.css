@@ -101,11 +101,46 @@
 .name {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: clamp(3.2rem, 7.6vw, 6.8rem);
-  line-height: 0.95;
-  letter-spacing: -0.04em;
+  font-size: clamp(3.4rem, 8.4vw, 7.6rem);
+  line-height: 0.92;
+  letter-spacing: -0.045em;
   color: var(--text);
   width: fit-content;
+}
+.nameLine {
+  display: block;
+  width: max-content;
+  will-change: transform;
+}
+.nameMask {
+  display: inline-block;
+  overflow: hidden;
+  perspective: 800px;
+  /* room for descenders and the lift */
+  padding: 0.08em 0.01em 0.1em;
+  margin: -0.08em -0.01em -0.1em;
+}
+.nameChar {
+  --p: 0;
+  display: inline-block;
+  transform-origin: 50% 100%;
+  backface-visibility: hidden;
+  /* Pointer proximity (set per letter in JS): lift + thin out + glow. `translate` composes with the
+     reveal's transform instead of fighting it. */
+  translate: 0 calc(var(--p) * -0.07em);
+  font-variation-settings: "wght" calc(700 - var(--p) * 380);
+  text-shadow: 0 0 calc(var(--p) * 40px) rgba(var(--accent-rgb), calc(var(--p) * 0.55));
+}
+.nameAccent .nameChar {
+  color: var(--accent);
+  background: linear-gradient(180deg, #8ff5c6 0%, var(--accent) 55%, #1fb27a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.nameAccent .nameChar {
+  text-shadow: none;
+  filter: drop-shadow(0 0 calc(var(--p) * 22px) rgba(var(--accent-rgb), calc(var(--p) * 0.6)));
 }
 .role {
   font-family: var(--font-display);
