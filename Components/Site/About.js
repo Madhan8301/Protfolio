@@ -1,4 +1,5 @@
-import { motion } from "framer-motion";
+import { motion, useInView } from "framer-motion";
+import { useRef } from "react";
 import { experience, profile } from "@/data/portfolio";
 import s from "@/styles/site/About.module.css";
 import ui from "@/styles/site/ui.module.css";
@@ -13,6 +14,44 @@ const years = (period) => {
   return from === to || !to ? from : `${from} — ${to}`;
 };
 
+const PHOTO = "/assets/portfolio_image.jpeg";
+
+/* Portrait: wipes up into view while the photo settles from a slight zoom; tilts toward the pointer. */
+function Portrait() {
+  const tilt = useTilt(5);
+  // Observe an unclipped wrapper: the figure starts fully clipped, so it would never "intersect".
+  const ref = useRef(null);
+  const shown = useInView(ref, { once: true, amount: 0.3 });
+  return (
+    <div ref={ref} className={s.photoWrap}>
+    <motion.figure
+      className={`${ui.fx} ${s.photo}`}
+      style={tilt.style}
+      {...tilt.handlers}
+      initial={{ clipPath: "inset(100% 0% 0% 0% round 22px)" }}
+      animate={shown ? { clipPath: "inset(0% 0% 0% 0% round 22px)", transitionEnd: { clipPath: "none" } } : undefined}
+      transition={{ duration: 1.3, ease }}
+    >
+      <span className={s.photoInner}>
+        <motion.img
+          src={PHOTO}
+          alt={`Portrait of ${profile.name}`}
+          width={1254}
+          height={1254}
+          initial={{ scale: 1.25 }}
+          animate={{ scale: shown ? 1 : 1.25 }}
+          transition={{ duration: 1.8, ease }}
+        />
+      </span>
+      <span className={s.photoShade} aria-hidden="true" />
+      <figcaption className={s.photoTag}>
+        <span className={s.pulse} /> {profile.location}
+      </figcaption>
+    </motion.figure>
+    </div>
+  );
+}
+
 export default function About() {
   const tilt = useTilt(6);
   return (
@@ -24,6 +63,7 @@ export default function About() {
 
       <div className={s.grid}>
         <aside className={s.side}>
+          <Portrait />
           <motion.div
             className={`${ui.fx} ${s.now}`}
             style={tilt.style}
