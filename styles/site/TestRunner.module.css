@@ -1,0 +1,211 @@
+/* ---------- Progress rail (desktop, lives in the empty left margin) ---------- */
+.rail {
+  position: fixed;
+  left: calc(var(--gutter) / 2 - 6px);
+  top: 50%;
+  z-index: 45;
+  translate: 0 -50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  padding: 10px 0;
+}
+.line {
+  position: absolute;
+  left: 50%;
+  top: 16px;
+  bottom: 16px;
+  width: 1px;
+  translate: -50% 0;
+  background: rgba(255, 255, 255, 0.12);
+}
+.fill {
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  transform-origin: top;
+  transition: transform 0.6s var(--ease);
+}
+.node {
+  position: relative;
+  width: 12px;
+  height: 12px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.28);
+  background: var(--bg);
+  cursor: pointer;
+  transition: background 0.35s, border-color 0.35s, transform 0.35s var(--ease);
+}
+/* Bigger hit area than the visual dot */
+.node::after {
+  content: "";
+  position: absolute;
+  inset: -8px;
+}
+.node:hover {
+  transform: scale(1.35);
+}
+.node[data-state="done"] {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.node[data-state="run"] {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0.6);
+  animation: pulse 1.6s infinite;
+}
+@keyframes pulse {
+  70% {
+    box-shadow: 0 0 0 8px rgba(var(--accent-rgb), 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0);
+  }
+}
+
+.panel {
+  position: absolute;
+  left: 28px;
+  top: 50%;
+  translate: 0 -50%;
+  width: 340px;
+  border-radius: 16px;
+  border: 1px solid var(--line-2);
+  background: rgba(14, 17, 22, 0.94);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  box-shadow: 0 30px 70px -20px rgba(0, 0, 0, 0.9);
+  overflow: hidden;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+.panelHead {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+  color: var(--text-2);
+}
+.list {
+  list-style: none;
+  padding: 6px;
+}
+.spec {
+  display: grid;
+  grid-template-columns: 18px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  color: var(--text-3);
+}
+.spec[data-state="done"] {
+  color: var(--text-2);
+}
+.spec[data-state="run"] {
+  color: var(--text);
+  background: rgba(var(--accent-rgb), 0.07);
+}
+.icon {
+  display: grid;
+  place-items: center;
+}
+.spec[data-state="done"] .icon {
+  color: var(--accent);
+}
+.specName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.specName b {
+  font-weight: 500;
+  color: var(--text);
+}
+.time {
+  font-size: 11px;
+  color: var(--text-3);
+}
+.panelFoot {
+  padding: 8px 16px 14px;
+  color: var(--text-3);
+}
+.ok {
+  color: var(--accent);
+}
+.spinner {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(var(--accent-rgb), 0.25);
+  border-top-color: var(--accent);
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------- Toast ---------- */
+.toastSlot {
+  position: fixed;
+  left: var(--gutter);
+  bottom: 22px;
+  z-index: 45;
+  pointer-events: none;
+}
+.toast {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 16px 9px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--line-2);
+  background: rgba(17, 20, 26, 0.9);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  box-shadow: 0 18px 40px -16px rgba(0, 0, 0, 0.8);
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--text);
+  white-space: nowrap;
+}
+.toastDone {
+  border-color: rgba(var(--accent-rgb), 0.6);
+  color: var(--accent);
+}
+.tick,
+.play {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: 11px;
+}
+.play {
+  background: rgba(var(--accent-rgb), 0.14);
+  color: var(--accent);
+  font-size: 9px;
+}
+
+@media (max-width: 900px) {
+  .rail {
+    display: none;
+  }
+}
+@media (max-width: 700px) {
+  .toastSlot {
+    left: 14px;
+    bottom: 14px;
+  }
+  .toast {
+    font-size: 11.5px;
+  }
+}

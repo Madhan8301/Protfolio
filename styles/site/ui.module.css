@@ -1,0 +1,589 @@
+/* ---------- Page layers ---------- */
+.main {
+  position: relative;
+  z-index: 1;
+}
+
+.curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 99;
+  background: #0c0c0e;
+  /* Fail-safe: never cover the page for long if scripts are slow. */
+  animation: curtainOut 0.4s 3s forwards;
+}
+@keyframes curtainOut {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- Text reveal ---------- */
+.mask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding: 0.04em 0 0.12em;
+  margin: -0.04em 0.24em -0.12em 0;
+}
+.mask:last-child {
+  margin-right: 0;
+}
+.word,
+.em {
+  display: inline-block;
+}
+.mask {
+  perspective: 700px;
+}
+.char {
+  display: inline-block;
+  transform-origin: 50% 100%;
+  backface-visibility: hidden;
+}
+/* Emphasised words: accent colour with a slow light sweep, same typeface.
+   The padding/negative margin extends the painted box so descenders (g, y) keep their fill. */
+.em {
+  color: var(--accent);
+  background: linear-gradient(100deg, var(--accent) 0%, var(--accent) 32%, #d4ffe9 46%, var(--blue) 58%, var(--accent) 76%, var(--accent) 100%);
+  background-size: 260% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  padding: 0 0.06em 0.16em;
+  margin: 0 -0.06em -0.16em;
+  animation: emSweep 7s var(--ease-io) infinite;
+}
+/* Split emphasised words (RevealText): each letter is its own layer while it animates, which a parent
+   background-clip can't reach — so every letter paints its own slice of one word-wide gradient.
+   Gradient is 2 words wide; --sweep (registered, globals.css) slides it by one word width. */
+.emWord {
+  display: inline-block;
+  animation: emSweepVar 7s var(--ease-io) infinite;
+}
+.emChar {
+  color: var(--accent);
+  background: linear-gradient(100deg, var(--accent) 0%, var(--accent) 28%, #d4ffe9 44%, var(--blue) 56%, var(--accent) 72%, var(--accent) 100%);
+  background-size: calc(var(--n) * 200%) 100%;
+  background-position: calc((var(--i) + var(--sweep) * var(--n)) / (2 * var(--n) - 1) * 100%) 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  padding-bottom: 0.16em;
+  margin-bottom: -0.16em;
+}
+@keyframes emSweepVar {
+  0%,
+  100% {
+    --sweep: 0;
+  }
+  50% {
+    --sweep: 1;
+  }
+}
+@keyframes emSweep {
+  0%,
+  100% {
+    background-position: 100% 0;
+  }
+  50% {
+    background-position: 0% 0;
+  }
+}
+
+/* ---------- Section header ---------- */
+.sh {
+  position: relative;
+  isolation: isolate;
+  margin-bottom: clamp(44px, 6vw, 64px);
+}
+.ghost {
+  position: absolute;
+  z-index: -1;
+  right: -0.04em;
+  top: -0.18em;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(7rem, 17vw, 15rem);
+  line-height: 1;
+  letter-spacing: -0.05em;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.09);
+  -webkit-mask-image: linear-gradient(180deg, #000 20%, transparent 90%);
+  mask-image: linear-gradient(180deg, #000 20%, transparent 90%);
+  pointer-events: none;
+  user-select: none;
+}
+.shTop {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text-2);
+  margin-bottom: 18px;
+}
+.shTop::before {
+  content: "";
+  width: 28px;
+  height: 1px;
+  background: var(--accent);
+}
+.shIndex {
+  color: var(--accent);
+}
+.shFile {
+  color: var(--accent);
+  letter-spacing: 0.04em;
+}
+.shRule {
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+.shStatus {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--line-2);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  transition: color 0.4s, border-color 0.4s, background 0.4s;
+}
+.shStatus[data-passed="true"] {
+  color: var(--accent);
+  background: rgba(var(--accent-rgb), 0.1);
+  border-color: rgba(var(--accent-rgb), 0.4);
+}
+.spinner {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(var(--accent-rgb), 0.25);
+  border-top-color: var(--accent);
+  animation: uiSpin 0.7s linear infinite;
+}
+@keyframes uiSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.shBody {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 380px);
+  align-items: end;
+  gap: 40px;
+}
+.shTitle {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(2.2rem, 5vw, 3.6rem);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+.shIntro {
+  color: var(--text-2);
+  font-size: 1.05rem;
+  line-height: 1.7;
+  padding-bottom: 0.3em;
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 48px;
+  padding: 0 24px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: none;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.25s, border-color 0.25s, color 0.25s, box-shadow 0.25s, transform 0.25s;
+}
+.btn:hover {
+  transform: translateY(-2px);
+}
+.btnLabel {
+  position: relative;
+}
+.btnIcon {
+  transition: transform 0.3s var(--ease);
+}
+.btn:hover .btnIcon {
+  transform: translate(2px, -2px);
+}
+
+.btnAccent {
+  background: var(--accent);
+  color: var(--accent-ink);
+  box-shadow: 0 10px 30px -12px rgba(var(--accent-rgb), 0.6);
+}
+/* Light sweep on hover */
+.btnAccent::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -80%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.7s ease;
+}
+.btnAccent:hover::before {
+  left: 130%;
+}
+.btnAccent:hover {
+  background: var(--accent-strong);
+  box-shadow: 0 14px 40px -10px rgba(var(--accent-rgb), 0.8);
+}
+
+.btnGhost {
+  border-color: var(--line-2);
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.02);
+}
+.btnGhost:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(var(--accent-rgb), 0.06);
+}
+
+.btnSm {
+  height: 38px;
+  padding: 0 16px;
+  font-size: 13.5px;
+}
+.btnLg {
+  height: 54px;
+  padding: 0 26px;
+  font-size: 15.5px;
+}
+
+/* ---------- Odometer ---------- */
+.odo {
+  display: inline-flex;
+  align-items: baseline;
+  line-height: 1;
+}
+.odoCol {
+  display: inline-block;
+  height: 1em;
+  overflow: hidden;
+}
+.odoStrip {
+  display: flex;
+  flex-direction: column;
+}
+.odoStrip span {
+  display: block;
+  height: 1em;
+  line-height: 1;
+}
+
+/* ---------- Letter roll ---------- */
+.roll {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  height: 1.25em;
+  line-height: 1.25em;
+}
+.rollInner {
+  display: inline-flex;
+}
+.rollInner > span {
+  display: inline-block;
+  text-shadow: 0 1.25em 0 var(--roll-color, var(--accent));
+  transition: transform 0.55s var(--ease-io);
+  transition-delay: calc(var(--i) * 14ms);
+}
+a:hover .rollInner > span,
+button:hover .rollInner > span,
+a:focus-visible .rollInner > span {
+  transform: translateY(-1.25em);
+}
+
+/* ---------- Text effects (hero) ---------- */
+.rotator {
+  display: inline-block;
+  vertical-align: bottom;
+  overflow: hidden;
+  padding-bottom: 0.12em;
+  margin-bottom: -0.12em;
+}
+.rotator > span {
+  display: inline-block;
+}
+.gradientText {
+  background: linear-gradient(90deg, var(--accent), var(--blue), #b892ff, var(--accent));
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shine 6s linear infinite;
+}
+@keyframes shine {
+  to {
+    background-position: 200% center;
+  }
+}
+
+/* ---------- Card hover effect (used with useTilt / TiltCard) ---------- */
+.fx {
+  position: relative;
+  isolation: isolate;
+  transform-style: preserve-3d;
+  transition: border-color 0.35s, box-shadow 0.45s var(--ease), background-color 0.35s;
+}
+/* Spotlight that follows the pointer */
+.fx::before,
+.fx::after {
+  content: "";
+  position: absolute;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+/* z-index -1 inside the isolated card: above the card's background, below its content. */
+.fx::before {
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(460px circle at var(--mx, 50%) var(--my, 50%), rgba(var(--accent-rgb), 0.11), transparent 42%);
+}
+/* Glowing border segment that follows the pointer */
+.fx::after {
+  inset: -1px;
+  z-index: 3;
+  padding: 1px;
+  background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), rgba(var(--accent-rgb), 0.95), rgba(110, 195, 255, 0.35) 30%, transparent 55%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+}
+.fx:hover {
+  box-shadow: 0 30px 70px -30px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(var(--accent-rgb), 0.08), 0 18px 50px -24px rgba(var(--accent-rgb), 0.35);
+}
+.fx:hover::before,
+.fx:hover::after {
+  opacity: 1;
+}
+
+/* ---------- Mouse effects ---------- */
+.mouseGlow {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 0;
+  width: 640px;
+  height: 640px;
+  margin: -320px 0 0 -320px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(var(--accent-rgb), 0.075), rgba(110, 195, 255, 0.03) 40%, transparent 68%);
+  will-change: transform;
+}
+.mouseRing {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 95;
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(var(--accent-rgb), 0.6);
+  pointer-events: none;
+  will-change: transform;
+  transition: width 0.3s var(--ease), height 0.3s var(--ease), margin 0.3s var(--ease), background 0.3s, border-color 0.3s,
+    opacity 0.3s;
+}
+.mouseRing[data-mode="link"] {
+  width: 52px;
+  height: 52px;
+  margin: -26px 0 0 -26px;
+  background: rgba(var(--accent-rgb), 0.12);
+  border-color: var(--accent);
+}
+.mouseRing[data-mode="card"] {
+  width: 70px;
+  height: 70px;
+  margin: -35px 0 0 -35px;
+  border-color: rgba(var(--accent-rgb), 0.35);
+  background: rgba(var(--accent-rgb), 0.04);
+}
+.mouseRing[data-visible="false"] {
+  opacity: 0;
+}
+.mouseDot {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 96;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: var(--accent);
+  pointer-events: none;
+  will-change: transform;
+  transition: opacity 0.3s;
+}
+.mouseDot[data-visible="false"] {
+  opacity: 0;
+}
+.ripple {
+  position: fixed;
+  z-index: 94;
+  width: 12px;
+  height: 12px;
+  margin: -6px 0 0 -6px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  pointer-events: none;
+}
+
+/* ---------- Preloader ("Hello" screen) — pinned to its original look ---------- */
+.preloader {
+  position: fixed;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0c0c0e;
+}
+.preWord {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-family: "Inter Tight", "Inter", system-ui, sans-serif;
+  font-weight: 500;
+  font-size: clamp(2.6rem, 6vw, 4.6rem);
+  letter-spacing: -0.03em;
+  color: #f3f2ee;
+}
+.preDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #d2ff3c;
+}
+.preMeta {
+  position: absolute;
+  z-index: 1;
+  left: var(--gutter);
+  right: var(--gutter);
+  bottom: 28px;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6e6d69;
+}
+/* Preloader extras: one soft glow, a blur-slide word swap and a thin progress line */
+.preGlow {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  top: 50%;
+  width: 70vmin;
+  height: 70vmin;
+  margin: -35vmin 0 0 -35vmin;
+  pointer-events: none;
+}
+.preGlow::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(210, 255, 60, 0.12), rgba(61, 220, 151, 0.05) 50%, transparent 78%);
+  animation: preBreathe 2.6s ease-in-out infinite alternate;
+}
+@keyframes preBreathe {
+  to {
+    transform: scale(1.1);
+  }
+}
+.preCenter {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 26px;
+}
+.preMask {
+  display: inline-block;
+  overflow: hidden;
+  padding: 0.1em 0.04em 0.16em;
+  margin: -0.1em -0.04em -0.16em;
+}
+.preText {
+  display: inline-block;
+}
+.preLine {
+  width: 140px;
+  height: 2px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+.preLine span {
+  display: block;
+  height: 100%;
+  transform-origin: 0 50%;
+  background: #d2ff3c;
+  box-shadow: 0 0 8px #d2ff3c;
+}
+
+
+@media (max-width: 900px) {
+  .shBody {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .shIntro {
+    max-width: 46ch;
+  }
+  .preMeta span:nth-child(2) {
+    display: none;
+  }
+}

@@ -1,0 +1,121 @@
+/* Fixed atmosphere layer behind <main> (which sits at z-index 1). */
+.root {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: radial-gradient(120% 80% at 50% -10%, #0d1218 0%, var(--bg) 55%);
+}
+
+/* ---------- Aurora ---------- */
+.aurora {
+  position: absolute;
+  inset: -10% 0;
+  transform: translate3d(0, calc(var(--sp, 0) * -8vh), 0);
+  will-change: transform;
+}
+.blob {
+  position: absolute;
+  width: 72vmax;
+  height: 72vmax;
+  border-radius: 50%;
+  will-change: transform;
+}
+.b1 {
+  top: -34vmax;
+  left: -22vmax;
+  opacity: 0.2;
+  background: radial-gradient(closest-side, var(--aura-1), transparent);
+  animation: drift1 34s ease-in-out infinite alternate;
+}
+.b2 {
+  top: 6vh;
+  right: -34vmax;
+  opacity: 0.15;
+  background: radial-gradient(closest-side, var(--aura-2), transparent);
+  animation: drift2 42s ease-in-out infinite alternate;
+}
+.b3 {
+  bottom: -46vmax;
+  left: 18vw;
+  opacity: 0.13;
+  background: radial-gradient(closest-side, var(--aura-3), transparent);
+  animation: drift3 38s ease-in-out infinite alternate;
+}
+@keyframes drift1 {
+  to {
+    transform: translate3d(18vw, 14vh, 0) scale(1.15);
+  }
+}
+@keyframes drift2 {
+  to {
+    transform: translate3d(-22vw, 22vh, 0) scale(0.9);
+  }
+}
+@keyframes drift3 {
+  to {
+    transform: translate3d(-16vw, -18vh, 0) scale(1.2);
+  }
+}
+
+/* ---------- Liquid light (WebGL) ---------- */
+.liquid {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 1.6s var(--ease);
+}
+.root[data-gl] .liquid {
+  opacity: 1;
+}
+/* The shader replaces the CSS colour fields and the vignette once it's running. */
+.root[data-gl] .aurora,
+.root[data-gl] .vignette {
+  display: none;
+}
+
+/* ---------- Scroll progress ---------- */
+.progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 60;
+  height: 2px;
+  pointer-events: none;
+}
+.progress span {
+  display: block;
+  height: 100%;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  background: linear-gradient(90deg, var(--aura-1), var(--aura-2), var(--aura-3));
+  box-shadow: 0 0 12px var(--aura-1);
+}
+
+/* ---------- Coverage matrix ---------- */
+.matrix {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  -webkit-mask-image: radial-gradient(ellipse 90% 80% at 50% 45%, #000 35%, transparent 100%);
+  mask-image: radial-gradient(ellipse 90% 80% at 50% 45%, #000 35%, transparent 100%);
+}
+
+/* ---------- Finish ---------- */
+.grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+}
+.vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 120% 90% at 50% 40%, transparent 55%, rgba(3, 4, 6, 0.6) 100%);
+}

@@ -1,0 +1,459 @@
+.hero {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  padding: 120px 0 56px;
+  overflow: hidden;
+}
+.container {
+  position: relative;
+  width: min(var(--max), 100% - 2 * var(--gutter));
+  margin-inline: auto;
+}
+
+/* Background: a perspective "test track" floor that flows toward you, plus a soft glow.
+   The floor tilts in 3D; its lines move via a transform on ::before (compositor-only). */
+.grid {
+  position: absolute;
+  left: -50%;
+  right: -50%;
+  top: 50%;
+  height: 520px;
+  overflow: hidden;
+  /* Horizon at the top edge; the near side swings toward the viewer. */
+  transform: perspective(900px) rotateX(60deg);
+  transform-origin: 50% 0;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.5) 30%, #000 70%);
+  mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.5) 30%, #000 70%);
+  opacity: 0.5;
+  pointer-events: none;
+}
+.grid::before {
+  content: "";
+  position: absolute;
+  inset: -80px 0 0;
+  background-image: linear-gradient(rgba(var(--accent-rgb), 0.28) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(var(--accent-rgb), 0.2) 1px, transparent 1px);
+  background-size: 80px 80px;
+  animation: floor 5s linear infinite;
+  will-change: transform;
+}
+.hero[data-paused] .grid::before,
+.hero[data-paused] .terminalWrap::before {
+  animation-play-state: paused;
+}
+@keyframes floor {
+  to {
+    transform: translate3d(0, 80px, 0);
+  }
+}
+.glow {
+  position: absolute;
+  top: -20%;
+  right: -10%;
+  width: 720px;
+  height: 720px;
+  background: radial-gradient(circle, rgba(var(--accent-rgb), 0.16), transparent 62%);
+  pointer-events: none;
+}
+
+.inner {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 56px;
+  align-items: center;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px 6px 10px;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  font-size: 0.85rem;
+  color: var(--text-2);
+  margin-bottom: 28px;
+}
+.status img {
+  height: 14px;
+}
+.pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0.6);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  70% {
+    box-shadow: 0 0 0 10px rgba(var(--accent-rgb), 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0);
+  }
+}
+
+/* The name — the first big thing you see */
+.name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(3.4rem, 8.4vw, 7.6rem);
+  line-height: 0.92;
+  letter-spacing: -0.045em;
+  color: var(--text);
+  width: fit-content;
+}
+.nameLine {
+  display: block;
+  width: max-content;
+  will-change: transform;
+}
+.nameMask {
+  display: inline-block;
+  overflow: hidden;
+  perspective: 800px;
+  /* room for descenders and the lift */
+  padding: 0.08em 0.01em 0.1em;
+  margin: -0.08em -0.01em -0.1em;
+}
+.nameChar {
+  --p: 0;
+  display: inline-block;
+  transform-origin: 50% 100%;
+  backface-visibility: hidden;
+  /* Pointer proximity (set per letter in JS): lift + thin out + glow. `translate` composes with the
+     reveal's transform instead of fighting it. */
+  translate: 0 calc(var(--p) * -0.07em);
+  font-variation-settings: "wght" calc(700 - var(--p) * 380);
+  text-shadow: 0 0 calc(var(--p) * 40px) rgba(var(--accent-rgb), calc(var(--p) * 0.55));
+}
+.nameAccent .nameChar {
+  color: var(--accent);
+  background: linear-gradient(180deg, #8ff5c6 0%, var(--accent) 55%, #1fb27a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.nameAccent .nameChar {
+  text-shadow: none;
+  filter: drop-shadow(0 0 calc(var(--p) * 22px) rgba(var(--accent-rgb), calc(var(--p) * 0.6)));
+}
+.role {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 2.8vw, 2.1rem);
+  color: var(--text-2);
+  font-weight: 500;
+  margin-top: 18px;
+  letter-spacing: -0.02em;
+}
+.role > span {
+  display: block;
+  width: max-content;
+}
+.text {
+  margin-top: 22px;
+  color: var(--text-2);
+  font-size: 1.05rem;
+  line-height: 1.7;
+  max-width: 540px;
+}
+.ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 34px;
+}
+
+/* ---------- Terminal card ---------- */
+.terminalWrap {
+  position: relative;
+  isolation: isolate;
+}
+/* A slowly rotating colour halo behind the card (conic field, softened by a radial mask). */
+.terminalWrap::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  top: 50%;
+  width: 175%;
+  aspect-ratio: 1;
+  margin: -87.5% 0 0 -87.5%;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    rgba(var(--accent-rgb), 0) 0deg,
+    rgba(var(--accent-rgb), 0.55) 70deg,
+    rgba(110, 195, 255, 0.45) 150deg,
+    rgba(167, 139, 250, 0.4) 220deg,
+    rgba(var(--accent-rgb), 0) 300deg
+  );
+  -webkit-mask-image: radial-gradient(closest-side, transparent 36%, #000 58%, rgba(0, 0, 0, 0.4) 72%, transparent 88%);
+  mask-image: radial-gradient(closest-side, transparent 36%, #000 58%, rgba(0, 0, 0, 0.4) 72%, transparent 88%);
+  opacity: 0.85;
+  animation: halo 16s linear infinite;
+  pointer-events: none;
+}
+@keyframes halo {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.terminalTilt {
+  border-radius: 16px;
+}
+.terminal {
+  position: relative;
+  background: linear-gradient(180deg, rgba(22, 27, 36, 0.82), rgba(12, 15, 21, 0.86));
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--line-2);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 40px 100px -30px rgba(0, 0, 0, 0.8);
+  font-family: var(--font-mono);
+  font-size: 0.86rem;
+}
+.terminalBar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+  color: var(--text-3);
+  font-size: 0.78rem;
+}
+.dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #ff5f57;
+}
+.dot:nth-child(2) {
+  background: #febc2e;
+}
+.dot:nth-child(3) {
+  background: #28c840;
+}
+.terminalBar span:last-child {
+  margin-left: auto;
+}
+.terminalBody {
+  padding: 20px 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  line-height: 1.5;
+  min-height: 268px;
+}
+.cmd {
+  color: var(--text);
+}
+.cmd b {
+  color: var(--accent);
+  font-weight: 400;
+}
+.pass {
+  color: var(--text-2);
+  display: flex;
+  gap: 10px;
+}
+.pass i {
+  color: var(--accent);
+  font-style: normal;
+  display: inline-block;
+}
+.pass em {
+  margin-left: auto;
+  color: var(--text-3);
+  font-style: normal;
+}
+.summaryLine {
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--line);
+  color: var(--accent);
+}
+.caret {
+  display: inline-block;
+  width: 8px;
+  height: 1.05em;
+  background: var(--accent);
+  vertical-align: text-bottom;
+  margin-left: 4px;
+  animation: blink 1s steps(1) infinite;
+}
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+.floatChip {
+  position: absolute;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(17, 20, 26, 0.92);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--line-2);
+  color: var(--text);
+  font-size: 0.8rem;
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow: 0 16px 40px -16px rgba(0, 0, 0, 0.8);
+  animation: bob 5s ease-in-out infinite;
+}
+.chipA {
+  top: -20px;
+  right: 24px;
+}
+.chipB {
+  bottom: 70px;
+  right: -36px;
+  animation-delay: -1.6s;
+}
+.chipC {
+  bottom: -20px;
+  left: -24px;
+  animation-delay: -3.2s;
+}
+@keyframes bob {
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+/* ---------- Stats ---------- */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin-top: 72px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--glass);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-edge);
+  overflow: hidden;
+}
+.stat {
+  position: relative;
+  padding: 26px 24px;
+  border-right: 1px solid var(--line);
+  transition: background 0.3s;
+}
+.stat::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(240px circle at var(--mx, 50%) var(--my, 50%), rgba(var(--accent-rgb), 0.14), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.35s;
+}
+.stat:hover::before {
+  opacity: 1;
+}
+.stat > * {
+  position: relative;
+}
+.statValue {
+  transform-origin: left bottom;
+}
+.stat:hover .statValue {
+  transform: translateY(-3px);
+}
+.stat:last-child {
+  border-right: none;
+}
+.statValue {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.03em;
+  transition: color 0.3s, transform 0.35s var(--ease);
+}
+.stat:hover .statValue {
+  color: var(--accent);
+}
+.statLabel {
+  color: var(--text-2);
+  font-size: 0.88rem;
+  margin-top: 4px;
+}
+
+.scrollCue {
+  margin: 44px auto 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: max-content;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.scrollCue span {
+  width: 1px;
+  height: 44px;
+  background: linear-gradient(var(--accent), transparent);
+  animation: drip 2s ease-in-out infinite;
+}
+@keyframes drip {
+  0% {
+    transform: scaleY(0);
+    transform-origin: top;
+  }
+  50% {
+    transform: scaleY(1);
+    transform-origin: top;
+  }
+  51% {
+    transform-origin: bottom;
+  }
+  100% {
+    transform: scaleY(0);
+    transform-origin: bottom;
+  }
+}
+
+@media (max-width: 900px) {
+  .inner {
+    grid-template-columns: 1fr;
+    gap: 44px;
+  }
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .stat:nth-child(2) {
+    border-right: none;
+  }
+  .stat:nth-child(-n + 2) {
+    border-bottom: 1px solid var(--line);
+  }
+  .chipB {
+    right: -8px;
+  }
+}
+@media (max-width: 680px) {
+  .hero {
+    padding-top: 104px;
+  }
+  /* Phones: stack the name on two big lines. */
+  .name {
+    font-size: 19vw;
+    line-height: 1;
+  }
+  .floatChip {
+    display: none;
+  }
+  .statValue {
+    font-size: 2rem;
+  }
+}
